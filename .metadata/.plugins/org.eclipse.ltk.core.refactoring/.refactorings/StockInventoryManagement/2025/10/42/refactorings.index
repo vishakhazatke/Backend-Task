@@ -1,0 +1,68 @@
+1760425366323	Delete element
+1760425386643	Rename type 'StockController'
+1760425491754	Rename type 'BaseResponseDTO'
+1760425547762	Rename type 'UserRepository'
+1760425580916	Rename type 'JwtUtil'
+1760425764920	Rename type 'ProductDTO'
+1760425882364	Rename package 'com.StockInventory.InventoryManagement.security'
+1760425894720	Delete element
+1760425966720	Delete element
+1760426157801	Delete element
+1760426163704	Delete element
+1760426168442	Delete element
+1760426192802	Rename type 'UserDTO'
+1760426451699	Delete element
+1760426457528	Delete element
+1760426479237	Rename compilation unit 'TransactionLog.java'
+1760426558576	Delete element
+1760426852990	Rename type 'Mapper'
+1760427752271	Rename compilation unit 'ProductRepository.java'
+1760427808701	Rename type 'TransactionLogRepository'
+1760427876731	Rename type 'RoleRepository'
+1760427920896	Delete element
+1760428001526	Rename type 'TransactionLogService'
+1760444129564	Delete element
+1760444229049	Rename compilation unit 'TransactionalLog.java'
+1760444249998	Delete element
+1760444314112	Rename compilation unit 'RoleRepo.java'
+1760444366677	Rename compilation unit 'UserRepo.java'
+1760444384427	Delete element
+1760444401556	Rename type 'ProductRepo'
+1760444433744	Rename type 'LogRepo'
+1760444538453	Rename compilation unit 'BaseResponseDto.java'
+1760444569386	Delete element
+1760444573321	Delete element
+1760444619658	Delete element
+1760444624352	Delete element
+1760444651839	Rename type 'ProductDto'
+1760444809540	Delete element
+1760444813119	Delete element
+1760444883054	Delete element
+1760444900200	Rename package 'com.StockInventory.InventoryManagement.configuration'
+1760447019021	Delete element
+1760450200817	Rename type 'SimpleMapper'
+1760450377591	Rename type 'JwtResponse'
+1760450559174	Delete element
+1760450563245	Delete element
+1760450569658	Delete element
+1760450609681	Delete element
+1760451126741	Delete element
+1760451132752	Delete element
+1760451137583	Delete element
+1760451144681	Delete element
+1760451157013	Delete element
+1760454889530	Delete element
+1760455074664	Rename type 'LoginRequest'
+1760455110717	Rename type 'LoginResponse'
+1760455149875	Delete element
+1760455157282	Delete element
+1760455201727	Delete element
+1760455229678	Rename type 'AppConfig'
+1760455272336	Rename package 'com.StockInventory.InventoryManagement.util'
+1760455383237	Delete element
+1760455584508	Delete element
+1760456891348	Rename type 'ProductMapper'
+1760457056821	Delete element
+1760457199687	Rename package 'com.StockInventory.InventoryManagement.security'
+1760457274306	Delete element
+1760457280078	Delete element
