@@ -30,7 +30,7 @@ public class ProductController {
             new BaseResponseDTO<>(
                 200,
                 "Product added successfully",
-                product,
+                null,
                 LocalDateTime.now()
             )
         );
@@ -74,7 +74,7 @@ public class ProductController {
             new BaseResponseDTO<>(
                 200,
                 "Product updated successfully",
-                updated,
+                null,
                 LocalDateTime.now()
             )
         );
@@ -98,8 +98,8 @@ public class ProductController {
         return ResponseEntity.ok(
             new BaseResponseDTO<>(
                 200,
-                "Stock updated successfully",
-                updatedProduct,
+                "Stock updated successfully!",
+                null,
                 LocalDateTime.now()
             )
         );

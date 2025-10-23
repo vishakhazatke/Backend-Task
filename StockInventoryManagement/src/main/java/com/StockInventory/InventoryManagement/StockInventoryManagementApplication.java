@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class StockInventoryManagementApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(StockInventoryManagementApplication.class, args);
 	}
-
 }

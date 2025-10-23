@@ -35,6 +35,6 @@ public class User {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    //@JoinColumn(name = "role_id")
     private Role role;
 }
