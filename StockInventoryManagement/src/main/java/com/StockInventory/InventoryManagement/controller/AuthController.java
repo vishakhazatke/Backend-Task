@@ -22,7 +22,6 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ Register user (no data in response)
     @PostMapping("/register")
     public ResponseEntity<BaseResponseDTO<Void>> register(@RequestBody UserDTO userDTO) {
         userService.registerUser(userDTO);
@@ -31,18 +30,14 @@ public class AuthController {
                 new BaseResponseDTO<>(
                         200,
                         "User registered successfully",
-                        null, // ❌ no data here
+                        null, 
                         LocalDateTime.now()
                 )
         );
     }
-
-    // ✅ Login (still returns JWT token)
     @PostMapping("/login")
     public ResponseEntity<BaseResponseDTO<String>> login(@RequestBody UserDTO userDTO) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword())
-        );
+        userService.loginUser(userDTO);
 
         String token = jwtUtil.generateToken(userDTO.getEmail());
 

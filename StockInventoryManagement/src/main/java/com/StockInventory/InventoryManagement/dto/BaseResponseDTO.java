@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BaseResponseDTO<T> {
+	
     private int status;
     private String message;
     private T data;

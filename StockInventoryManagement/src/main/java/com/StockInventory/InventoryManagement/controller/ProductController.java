@@ -21,7 +21,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    // ✅ Admin only
+    // Admin only
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<BaseResponseDTO<ProductDTO>> addProduct(@RequestBody ProductDTO productDTO) {
@@ -51,7 +51,7 @@ public class ProductController {
     }
 
 
-    // ✅ All roles
+    // All roles
     @GetMapping
     public ResponseEntity<BaseResponseDTO<List<ProductDTO>>> getAllProducts() {
         List<ProductDTO> products = productService.getAllProducts();
@@ -65,7 +65,7 @@ public class ProductController {
         );
     }
 
-    // ✅ Admin only
+    // Admin only
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponseDTO<ProductDTO>> updateProduct(@PathVariable Long id, @RequestBody ProductDTO dto) {
@@ -88,7 +88,7 @@ public class ProductController {
     }
 
 
-    // ✅ Update stock (Dealer Only)
+    // Dealer Only
     @PatchMapping("/{id}/stock")
     @PreAuthorize("hasRole('DEALER')")
     public ResponseEntity<BaseResponseDTO<Product>> updateStock(@PathVariable Long id,
@@ -105,7 +105,7 @@ public class ProductController {
         );
     }
 
-    // ✅ Low stock products (Admin Only)
+    // Admin Only
     @GetMapping("/low-stock")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponseDTO<List<Product>>> getLowStockProducts() {
@@ -120,7 +120,7 @@ public class ProductController {
         );
     }
 
-    // ✅ Transaction logs (Admin Only)
+    // Admin Only
     @GetMapping("/transactions")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponseDTO<List<TransactionLog>>> getTransactionLogs() {

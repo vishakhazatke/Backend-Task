@@ -1,10 +1,8 @@
 package com.StockInventory.InventoryManagement.service;
 
 import com.StockInventory.InventoryManagement.dto.UserDTO;
-import com.StockInventory.InventoryManagement.entity.Role;
-import com.StockInventory.InventoryManagement.entity.User;
-import com.StockInventory.InventoryManagement.repository.RoleRepository;
-import com.StockInventory.InventoryManagement.repository.UserRepository;
+import com.StockInventory.InventoryManagement.entity.*;
+import com.StockInventory.InventoryManagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,10 +17,12 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ Register a new user
+    private final AdminRepository adminRepository;
+    private final DealerRepository dealerRepository;
+    private final CustomerRepository customerRepository;
+
     public User registerUser(UserDTO userDTO) {
 
-        // --- Validation ---
         if (userDTO.getName() == null || userDTO.getName().trim().isEmpty())
             throw new RuntimeException("Name cannot be empty");
 
@@ -39,11 +39,9 @@ public class UserService {
         if (!userDTO.getPassword().matches(".*[a-z].*"))
             throw new RuntimeException("Password must contain at least one lowercase letter");
 
-        // --- Find role ---
         Role role = roleRepository.findByName(userDTO.getRoleName())
                 .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRoleName()));
 
-        // --- Create user ---
         User user = User.builder()
                 .name(userDTO.getName().trim())
                 .email(userDTO.getEmail().trim())
@@ -56,6 +54,85 @@ public class UserService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        
+        String roleName = role.getName().toUpperCase();
+
+        switch (roleName) {
+        case "ADMIN":
+            adminRepository.save(
+                    Admin.builder()
+                            .user(savedUser)
+                            .name(savedUser.getName())
+                            .email(savedUser.getEmail())
+                            .password(savedUser.getPassword())
+                            .mobileNo(savedUser.getMobileNo())
+                            .address(savedUser.getAddress())
+                            .status(savedUser.getStatus())           
+                            .createdAt(savedUser.getCreatedAt())     
+                            .updatedAt(savedUser.getUpdatedAt())     
+                            .role(savedUser.getRole())
+                            .build()
+            );
+            break;
+
+        case "DEALER":
+            dealerRepository.save(
+                    Dealer.builder()
+                            .user(savedUser)
+                            .name(savedUser.getName())
+                            .email(savedUser.getEmail())
+                            .password(savedUser.getPassword())
+                            .mobileNo(savedUser.getMobileNo())
+                            .address(savedUser.getAddress())
+                            .status(savedUser.getStatus())           
+                            .createdAt(savedUser.getCreatedAt())     
+                            .updatedAt(savedUser.getUpdatedAt())     
+                            .role(savedUser.getRole())
+                            .build()
+            );
+            break;
+
+        case "CUSTOMER":
+            customerRepository.save(
+                    Customer.builder()
+                            .user(savedUser)
+                            .name(savedUser.getName())
+                            .email(savedUser.getEmail())
+                            .password(savedUser.getPassword())
+                            .mobileNo(savedUser.getMobileNo())
+                            .address(savedUser.getAddress())
+                            .status(savedUser.getStatus())           
+                            .createdAt(savedUser.getCreatedAt())    
+                            .updatedAt(savedUser.getUpdatedAt())     
+                            .role(savedUser.getRole())
+                            .build()
+            );
+            break;
+
+        default:
+            throw new RuntimeException("Unsupported role: " + roleName);
+        }
+        return savedUser;
     }
+    public String loginUser(UserDTO userDTO) {
+        
+        if (userDTO.getEmail() == null || userDTO.getEmail().trim().isEmpty())
+            throw new RuntimeException("Email cannot be empty");
+
+        if (!userDTO.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"))
+            throw new RuntimeException("Invalid email format");
+
+        if (userDTO.getPassword() == null || userDTO.getPassword().isEmpty())
+            throw new RuntimeException("Password cannot be empty");
+
+        User existingUser = userRepository.findByEmail(userDTO.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userDTO.getEmail()));
+
+        if (!passwordEncoder.matches(userDTO.getPassword(), existingUser.getPassword()))
+            throw new RuntimeException("Invalid password");
+
+        return "Login successful for " + existingUser.getRole().getName() + ": " + existingUser.getName();
+    }
+
 }
