@@ -35,6 +35,9 @@ public class Dealer {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    private String shopName;
+    private String gstNumber;
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
