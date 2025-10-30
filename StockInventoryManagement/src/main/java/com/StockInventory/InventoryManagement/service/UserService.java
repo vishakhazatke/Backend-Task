@@ -89,6 +89,8 @@ public class UserService {
                             .createdAt(savedUser.getCreatedAt())     
                             .updatedAt(savedUser.getUpdatedAt())     
                             .role(savedUser.getRole())
+                            .shopName(userDTO.getShopName() != null ? userDTO.getShopName().trim() : null)
+                            .gstNumber(userDTO.getGstNumber() != null ? userDTO.getGstNumber().trim() : null)
                             .build()
             );
             break;
