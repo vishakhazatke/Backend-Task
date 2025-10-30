@@ -14,4 +14,6 @@ public class UserDTO {
     private String mobileNo;
     private String address;
     private String roleName;
+    private String shopName;
+    private String gstNumber;
 }
