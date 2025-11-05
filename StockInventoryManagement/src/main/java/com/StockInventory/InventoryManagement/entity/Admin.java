@@ -15,11 +15,10 @@ import lombok.*;
 public class Admin {
 
     @Id
-    private Long id;  
+    private String adminId;  
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     
     private String name;

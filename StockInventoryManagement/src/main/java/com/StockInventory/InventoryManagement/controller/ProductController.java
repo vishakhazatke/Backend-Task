@@ -50,7 +50,6 @@ public class ProductController {
         );
     }
 
-
     // All roles
     @GetMapping
     public ResponseEntity<BaseResponseDTO<List<ProductDTO>>> getAllProducts() {
@@ -86,7 +85,6 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Product deleted successfully");
     }
-
 
     // Dealer Only
     @PatchMapping("/{id}/stock")

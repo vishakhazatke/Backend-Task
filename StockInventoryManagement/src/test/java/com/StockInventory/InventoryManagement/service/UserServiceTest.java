@@ -42,13 +42,15 @@ class UserServiceTest {
 
         // match your UserDTO constructor order exactly
         userDTO = new UserDTO(
-                null,                           // id
-                "Vishakha",                     // name
-                "vishakha@gmail.com",           // email
-                "password123",                  // password
-                "9999999999",                   // mobileNo
-                "Pune",                         // address
-                "DEALER"                        // role
+                null,                         
+                "Vishakha",                     
+                "vishakha@gmail.com",          
+                "password123",                  
+                "9999999999",                   
+                "Pune",                         
+                "DEALER",
+                "Electronics Shop",
+                "GSTIN1234"
         );
 
         role = Role.builder()
@@ -57,7 +59,7 @@ class UserServiceTest {
                 .build();
 
         user = User.builder()
-                .id(1L)
+                .id("U1")
                 .name("Vishakha")
                 .email("vishakha@gmail.com")
                 .password("encodedPassword")

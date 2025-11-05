@@ -54,69 +54,83 @@ public class UserService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
+        long count = userRepository.count() + 1;
+        user.setId("U" + count);
+
         User savedUser = userRepository.save(user);
-        
+
         String roleName = role.getName().toUpperCase();
 
         switch (roleName) {
-        case "ADMIN":
-            adminRepository.save(
-                    Admin.builder()
-                            .user(savedUser)
-                            .name(savedUser.getName())
-                            .email(savedUser.getEmail())
-                            .password(savedUser.getPassword())
-                            .mobileNo(savedUser.getMobileNo())
-                            .address(savedUser.getAddress())
-                            .status(savedUser.getStatus())           
-                            .createdAt(savedUser.getCreatedAt())     
-                            .updatedAt(savedUser.getUpdatedAt())     
-                            .role(savedUser.getRole())
-                            .build()
-            );
-            break;
 
-        case "DEALER":
-            dealerRepository.save(
-                    Dealer.builder()
-                            .user(savedUser)
-                            .name(savedUser.getName())
-                            .email(savedUser.getEmail())
-                            .password(savedUser.getPassword())
-                            .mobileNo(savedUser.getMobileNo())
-                            .address(savedUser.getAddress())
-                            .status(savedUser.getStatus())           
-                            .createdAt(savedUser.getCreatedAt())     
-                            .updatedAt(savedUser.getUpdatedAt())     
-                            .role(savedUser.getRole())
-                            .build()
-            );
-            break;
+            case "ADMIN":
+                long adminCount = adminRepository.count() + 1;
+                String adminId = "A" + adminCount;
+                adminRepository.save(
+                        Admin.builder()
+                                .adminId(adminId)
+                                .user(savedUser)
+                                .name(savedUser.getName())
+                                .email(savedUser.getEmail())
+                                .password(savedUser.getPassword())
+                                .mobileNo(savedUser.getMobileNo())
+                                .address(savedUser.getAddress())
+                                .status(savedUser.getStatus())
+                                .createdAt(savedUser.getCreatedAt())
+                                .updatedAt(savedUser.getUpdatedAt())
+                                .build()
+                );
+                break;
 
-        case "CUSTOMER":
-            customerRepository.save(
-                    Customer.builder()
-                            .user(savedUser)
-                            .name(savedUser.getName())
-                            .email(savedUser.getEmail())
-                            .password(savedUser.getPassword())
-                            .mobileNo(savedUser.getMobileNo())
-                            .address(savedUser.getAddress())
-                            .status(savedUser.getStatus())           
-                            .createdAt(savedUser.getCreatedAt())    
-                            .updatedAt(savedUser.getUpdatedAt())     
-                            .role(savedUser.getRole())
-                            .build()
-            );
-            break;
+            case "DEALER":
+                long dealerCount = dealerRepository.count() + 1;
+                String dealerId = "D" + dealerCount;
+                dealerRepository.save(
+                        Dealer.builder()
+                                .dealerId(dealerId)
+                                .user(savedUser)
+                                .name(savedUser.getName())
+                                .email(savedUser.getEmail())
+                                .password(savedUser.getPassword())
+                                .mobileNo(savedUser.getMobileNo())
+                                .address(savedUser.getAddress())
+                                .status(savedUser.getStatus())
+                                .createdAt(savedUser.getCreatedAt())
+                                .updatedAt(savedUser.getUpdatedAt())
+                                .shopName(userDTO.getShopName() != null ? userDTO.getShopName().trim() : null)
+                                .gstNumber(userDTO.getGstNumber() != null ? userDTO.getGstNumber().trim() : null)
+                                .build()
+                );
+                break;
 
-        default:
-            throw new RuntimeException("Unsupported role: " + roleName);
+            case "CUSTOMER":
+                long customerCount = customerRepository.count() + 1;
+                String customerId = "C" + customerCount;
+                customerRepository.save(
+                        Customer.builder()
+                                .customerId(customerId)
+                                .user(savedUser)
+                                .name(savedUser.getName())
+                                .email(savedUser.getEmail())
+                                .password(savedUser.getPassword())
+                                .mobileNo(savedUser.getMobileNo())
+                                .address(savedUser.getAddress())
+                                .status(savedUser.getStatus())
+                                .createdAt(savedUser.getCreatedAt())
+                                .updatedAt(savedUser.getUpdatedAt())
+                                .build()
+                );
+                break;
+
+            default:
+                throw new RuntimeException("Unsupported role: " + roleName);
         }
+
         return savedUser;
     }
+
     public String loginUser(UserDTO userDTO) {
-        
+
         if (userDTO.getEmail() == null || userDTO.getEmail().trim().isEmpty())
             throw new RuntimeException("Email cannot be empty");
 
@@ -134,5 +148,4 @@ public class UserService {
 
         return "Login successful for " + existingUser.getRole().getName() + ": " + existingUser.getName();
     }
-
 }

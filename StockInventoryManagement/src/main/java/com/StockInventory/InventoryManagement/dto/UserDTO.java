@@ -7,11 +7,13 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UserDTO {
-    private Long id;
+    private String id;
     private String name;
     private String email;
     private String password;
     private String mobileNo;
     private String address;
     private String roleName;
+    private String shopName;
+    private String gstNumber;
 }

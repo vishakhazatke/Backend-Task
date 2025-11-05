@@ -11,7 +11,6 @@ import com.StockInventory.InventoryManagement.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,7 +65,6 @@ public class ProductService {
         product.setQuantity(product.getQuantity() + request.getQuantityChange());
         productRepository.save(product);
 
-        // Save transaction log
         TransactionLog log = TransactionLog.builder()
                 .productId(productId)
                 .userId(dealerId)

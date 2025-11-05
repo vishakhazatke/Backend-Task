@@ -7,7 +7,7 @@ public class Mapper {
 
     public static UserDTO toUserDTO(User user) {
         return UserDTO.builder()
-                .id(user.getId())
+        		.id(String.valueOf(user.getId()))
                 .name(user.getName())
                 .email(user.getEmail())
                 .mobileNo(user.getMobileNo())

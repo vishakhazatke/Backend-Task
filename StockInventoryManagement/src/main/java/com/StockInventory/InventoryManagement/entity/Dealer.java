@@ -15,27 +15,29 @@ import lombok.*;
 
 public class Dealer {
 
-    @Id
-    private Long id;
+	    @Id
+	    private String dealerId;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
-    private User user;
-    
-    private String name;
-    private String email;
-    private String password;
-    private String mobileNo;
-    private String address;
-    
-    @Column(nullable = false)
-    private String status = "Active"; // Active / Inactive
+	    @OneToOne
+	    @JoinColumn(name = "user_id", referencedColumnName = "id")
+	    private User user;
+	    
+	    private String name;
+	    private String email;
+	    private String password;
+	    private String mobileNo;
+	    private String address;
+	    
+	    @Column(nullable = false)
+	    private String status = "Active"; 
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+	    private LocalDateTime createdAt = LocalDateTime.now();
+	    private LocalDateTime updatedAt = LocalDateTime.now();
+	    
+	    private String shopName;
+	    private String gstNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+	    @ManyToOne
+	    @JoinColumn(name = "role_id")
+	    private Role role;
 }

@@ -16,11 +16,10 @@ import lombok.*;
 public class Customer {
 
     @Id
-    private Long id;
+    private String customerId;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     
     private String name;

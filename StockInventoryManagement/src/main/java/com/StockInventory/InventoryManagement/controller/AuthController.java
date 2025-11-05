@@ -2,15 +2,12 @@ package com.StockInventory.InventoryManagement.controller;
 
 import com.StockInventory.InventoryManagement.dto.BaseResponseDTO;
 import com.StockInventory.InventoryManagement.dto.UserDTO;
-import com.StockInventory.InventoryManagement.entity.User;
 import com.StockInventory.InventoryManagement.service.UserService;
 import com.StockInventory.InventoryManagement.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 
 @RestController
@@ -21,7 +18,6 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
-
     @PostMapping("/register")
     public ResponseEntity<BaseResponseDTO<Void>> register(@RequestBody UserDTO userDTO) {
         userService.registerUser(userDTO);
