@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "cart")
 @Data
@@ -35,4 +37,7 @@ public class Cart {
     private Product product;
 
     private int quantity;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal totalPrice;
 }

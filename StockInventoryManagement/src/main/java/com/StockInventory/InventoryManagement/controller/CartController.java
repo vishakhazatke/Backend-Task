@@ -16,21 +16,18 @@ public class CartController {
 
     private final CartService cartService;
 
-    // ➕ Add product to cart
     @PostMapping("/add")
     public ResponseEntity<Cart> addToCart(@RequestBody CartRequest request) {
         Cart cart = cartService.addToCart(request.getUserId(), request.getProductId(), request.getQuantity());
         return ResponseEntity.ok(cart);
     }
 
-    // 👀 View user's cart
     @GetMapping("/{userId}")
     public ResponseEntity<List<Cart>> viewCart(@PathVariable String userId) {
         List<Cart> cartList = cartService.getUserCart(userId);
         return ResponseEntity.ok(cartList);
     }
 
-    // ❌ Remove from cart
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeFromCart(@RequestBody CartRequest request) {
         cartService.removeFromCart(request.getUserId(), request.getProductId());

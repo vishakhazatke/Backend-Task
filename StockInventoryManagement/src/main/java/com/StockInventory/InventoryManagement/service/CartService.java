@@ -9,6 +9,7 @@ import com.StockInventory.InventoryManagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,6 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    // ➕ Add product to cart
     public Cart addToCart(String userId, Long productId, int quantity) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
@@ -32,6 +32,7 @@ public class CartService {
         if (existingCart.isPresent()) {
             Cart cart = existingCart.get();
             cart.setQuantity(cart.getQuantity() + quantity);
+            cart.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(cart.getQuantity())));
             return cartRepository.save(cart);
         }
 
@@ -39,17 +40,16 @@ public class CartService {
         cart.setUser(user);
         cart.setProduct(product);
         cart.setQuantity(quantity);
+        cart.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
         return cartRepository.save(cart);
     }
 
-    // 👀 View user's cart
     public List<Cart> getUserCart(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
         return cartRepository.findByUser(user);
     }
 
-    // ❌ Remove product from cart
     public void removeFromCart(String userId, Long productId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));

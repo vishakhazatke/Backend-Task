@@ -11,6 +11,10 @@ import com.StockInventory.InventoryManagement.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,12 +27,50 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final TransactionLogRepository transactionLogRepository;
 
+    public Product saveProduct(String name,
+            String category,
+            String brand,
+            String description,
+            BigDecimal price,
+            Integer quantity,
+            Integer minStockLevel,
+            Long dealerId,
+            MultipartFile imageFile) {
+
+          byte[] imageBytes = null;
+          try {
+             if (imageFile != null && !imageFile.isEmpty()) {
+                imageBytes = imageFile.getBytes();
+             }
+            } catch (IOException e) {
+                  throw new RuntimeException("Failed to process image file", e);
+         }
+
+          Product product = Product.builder()
+          .name(name)
+          .category(category)
+          .brand(brand)
+          .description(description)
+          .price(price)
+          .quantity(quantity)
+          .minStockLevel(minStockLevel)
+          .dealerId(dealerId)
+          .createdAt(LocalDateTime.now())
+          .updatedAt(LocalDateTime.now())
+          .image(imageBytes) // save image byte[] directly to DB
+          .build();
+
+         return productRepository.save(product);
+}
     public ProductDTO addProduct(ProductDTO dto) {
         dto.setCreatedAt(LocalDateTime.now());
         dto.setUpdatedAt(LocalDateTime.now());
+
         Product saved = productRepository.save(Mapper.toProductEntity(dto));
+
         return Mapper.toProductDTO(saved);
     }
+
 
     public ProductDTO getProductById(Long id) {
         Product product = productRepository.findById(id).orElseThrow();

@@ -29,4 +29,9 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long dealerId;
+    
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] image;
 }
+

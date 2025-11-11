@@ -19,7 +19,7 @@ public class User {
 
     @Id
     @Column(length = 50)
-    private String id; // A1, D1, C1
+    private String id;
 
     private String name;
 
@@ -33,7 +33,7 @@ public class User {
     private String address;
 
     @Column(nullable = false)
-    private String status = "Active"; // Active / Inactive
+    private String status = "Active";
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
@@ -41,4 +41,14 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+    
+    @Column(name = "otp")
+    private String otp;
+
+    @Column(name = "otp_Expiry")
+    private LocalDateTime otpExpiry;
+
+    @Column(name = "is_verified")
+    private boolean isVerified = false;
+
 }

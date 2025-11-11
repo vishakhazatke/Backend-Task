@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final EmailService emailService;
     private final AdminRepository adminRepository;
     private final DealerRepository dealerRepository;
     private final CustomerRepository customerRepository;
@@ -25,9 +27,18 @@ public class UserService {
 
         if (userDTO.getName() == null || userDTO.getName().trim().isEmpty())
             throw new RuntimeException("Name cannot be empty");
+        String name = userDTO.getName().trim();
+
+        if(!name.matches("^[A-Za-z]+$"))
+            throw new RuntimeException("Name must contain only Alphabets. No numbers or special characters allowed");
 
         if (userDTO.getEmail() == null || !userDTO.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"))
             throw new RuntimeException("Invalid email format");
+        
+        if(userRepository.findByEmail(userDTO.getEmail()).isPresent() 
+        		   && !userRepository.findByEmail(userDTO.getEmail()).get().isVerified()) {
+        		    throw new RuntimeException("Please verify OTP before registration");
+        }
 
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent())
             throw new RuntimeException("Email is already registered");
@@ -38,6 +49,11 @@ public class UserService {
             throw new RuntimeException("Password must contain at least one uppercase letter");
         if (!userDTO.getPassword().matches(".*[a-z].*"))
             throw new RuntimeException("Password must contain at least one lowercase letter");
+        if(!userDTO.getPassword().matches(".*[!@#$%^&*()_+=\\-{}|:;<>?,./].*"))
+            throw new RuntimeException("Password must contain at least one Special Character");
+
+        if(userDTO.getMobileNo() == null || !userDTO.getMobileNo().matches("^[0-9]{10}$"))
+            throw new RuntimeException("Mobile Number should be 10 Digits only");
 
         Role role = roleRepository.findByName(userDTO.getRoleName())
                 .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRoleName()));
@@ -52,6 +68,7 @@ public class UserService {
                 .status("ACTIVE")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .isVerified(true)
                 .build();
 
         long count = userRepository.count() + 1;
@@ -128,7 +145,46 @@ public class UserService {
 
         return savedUser;
     }
+    
+    public String sendOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
+        String otp = String.format("%04d", new Random().nextInt(10000)); // 4 digit OTP
+
+        user.setOtp(otp);
+        user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+        userRepository.save(user);
+
+        emailService.sendEmail(user.getEmail(), "Your OTP Code", "Your OTP is: " + otp);
+
+        return "OTP Sent Successfully!";
+    }
+
+    // ✅ Verify OTP
+    public String verifyOtp(String email, String otp) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        if (user.getOtp() == null || user.getOtpExpiry() == null || user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP expired. Request a new one.");
+        }
+
+        if (!user.getOtp().equals(otp)) {
+            throw new RuntimeException("Invalid OTP!");
+        }
+
+        // ✅ OTP Verified → Activate account
+        user.setStatus("ACTIVE");
+        user.setOtp(null);
+        user.setOtpExpiry(null);
+        userRepository.save(user);
+
+        return "OTP Verified Successfully!";
+    }
+
+
+    
     public String loginUser(UserDTO userDTO) {
 
         if (userDTO.getEmail() == null || userDTO.getEmail().trim().isEmpty())

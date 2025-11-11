@@ -4,19 +4,18 @@ import com.StockInventory.InventoryManagement.dto.ProductDTO;
 import com.StockInventory.InventoryManagement.dto.StockUpdateRequest;
 import com.StockInventory.InventoryManagement.entity.Product;
 import com.StockInventory.InventoryManagement.entity.TransactionLog;
+import com.StockInventory.InventoryManagement.mapper.Mapper;
 import com.StockInventory.InventoryManagement.repository.ProductRepository;
 import com.StockInventory.InventoryManagement.repository.TransactionLogRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -33,10 +32,13 @@ class ProductServiceTest {
     private ProductService productService;
 
     private Product product;
+    private ProductDTO productDTO;
+    private MockedStatic<Mapper> mapperMock;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
         product = Product.builder()
                 .id(1L)
                 .name("Laptop")
@@ -48,20 +50,31 @@ class ProductServiceTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+
+        productDTO = new ProductDTO();
+        productDTO.setName("Laptop");
+        productDTO.setCategory("Electronics");
+        productDTO.setBrand("Dell");
+        productDTO.setQuantity(10);
+        productDTO.setPrice(BigDecimal.valueOf(80000.0));
+
+        mapperMock = mockStatic(Mapper.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        mapperMock.close();
     }
 
     @Test
     void testAddProduct() {
-        ProductDTO dto = new ProductDTO();
-        dto.setName("Laptop");
-        dto.setCategory("Electronics");
-        dto.setBrand("Dell");
-        dto.setQuantity(10);
-        dto.setPrice(BigDecimal.valueOf(80000.0));
+        // Mock mapping
+        mapperMock.when(() -> Mapper.toProductEntity(any(ProductDTO.class))).thenReturn(product);
+        mapperMock.when(() -> Mapper.toProductDTO(any(Product.class))).thenReturn(productDTO);
 
         when(productRepository.save(any(Product.class))).thenReturn(product);
 
-        ProductDTO result = productService.addProduct(dto);
+        ProductDTO result = productService.addProduct(productDTO);
 
         assertNotNull(result);
         assertEquals("Laptop", result.getName());
@@ -71,6 +84,7 @@ class ProductServiceTest {
     @Test
     void testGetProductById() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        mapperMock.when(() -> Mapper.toProductDTO(product)).thenReturn(productDTO);
 
         ProductDTO result = productService.getProductById(1L);
 

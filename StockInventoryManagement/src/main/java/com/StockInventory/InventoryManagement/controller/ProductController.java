@@ -5,12 +5,20 @@ import com.StockInventory.InventoryManagement.dto.ProductDTO;
 import com.StockInventory.InventoryManagement.dto.StockUpdateRequest;
 import com.StockInventory.InventoryManagement.entity.Product;
 import com.StockInventory.InventoryManagement.entity.TransactionLog;
+import com.StockInventory.InventoryManagement.mapper.Mapper;
 import com.StockInventory.InventoryManagement.service.ProductService;
+
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,21 +30,27 @@ public class ProductController {
     private final ProductService productService;
 
     // Admin only
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    public ResponseEntity<BaseResponseDTO<ProductDTO>> addProduct(@RequestBody ProductDTO productDTO) {
-        ProductDTO product = productService.addProduct(productDTO);
-        return ResponseEntity.ok(
-            new BaseResponseDTO<>(
-                200,
-                "Product added successfully",
-                null,
-                LocalDateTime.now()
-            )
+    @PostMapping(value = "/addProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addProduct(
+            @RequestParam("name") String name,
+            @RequestParam("category") String category,
+            @RequestParam("brand") String brand,
+            @RequestParam("description") String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("minStockLevel") Integer minStockLevel,
+            @RequestParam("dealerId") Long dealerId,
+            @RequestParam("image") MultipartFile imageFile
+    ) {
+        Product product = productService.saveProduct(
+                name, category, brand, description, price, quantity, minStockLevel, dealerId, imageFile
         );
+        return ResponseEntity.ok(product);
     }
 
- // All roles
+
+
+    // All roles
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponseDTO<ProductDTO>> getProduct(@PathVariable Long id) {
         ProductDTO productDTO = productService.getProductById(id);
