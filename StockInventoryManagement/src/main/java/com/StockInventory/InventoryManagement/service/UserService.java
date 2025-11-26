@@ -6,6 +6,7 @@ import com.StockInventory.InventoryManagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -32,12 +33,14 @@ public class UserService {
         if(!name.matches("^[A-Za-z]+$"))
             throw new RuntimeException("Name must contain only Alphabets. No numbers or special characters allowed");
 
-        if (userDTO.getEmail() == null || !userDTO.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"))
-            throw new RuntimeException("Invalid email format");
-        
+        if (userDTO.getEmail() == null 
+                || !userDTO.getEmail().matches("^[A-Za-z0-9+_.-]+@gmail\\.com$")) {
+            throw new RuntimeException("Invalid Email. Only @gmail.com allowed.");
+        }
+
         if(userRepository.findByEmail(userDTO.getEmail()).isPresent() 
-        		   && !userRepository.findByEmail(userDTO.getEmail()).get().isVerified()) {
-        		    throw new RuntimeException("Please verify OTP before registration");
+                && !userRepository.findByEmail(userDTO.getEmail()).get().getIsVerified()) {
+            throw new RuntimeException("Please verify OTP before registration");
         }
 
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent())
@@ -52,8 +55,11 @@ public class UserService {
         if(!userDTO.getPassword().matches(".*[!@#$%^&*()_+=\\-{}|:;<>?,./].*"))
             throw new RuntimeException("Password must contain at least one Special Character");
 
-        if(userDTO.getMobileNo() == null || !userDTO.getMobileNo().matches("^[0-9]{10}$"))
-            throw new RuntimeException("Mobile Number should be 10 Digits only");
+        if (userDTO.getMobileNo() == null 
+                || !userDTO.getMobileNo().matches("^[6-9][0-9]{9}$")) {
+            throw new RuntimeException("Invalid Mobile Number. Must be 10 digits and start with 6, 7, 8, or 9.");
+        }
+
 
         Role role = roleRepository.findByName(userDTO.getRoleName())
                 .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRoleName()));
@@ -146,6 +152,37 @@ public class UserService {
         return savedUser;
     }
     
+    @Transactional
+    public void deleteUser(String userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        String roleName = user.getRole().getName().toUpperCase();
+
+        switch (roleName) {
+
+            case "ADMIN":
+                adminRepository.deleteByUser(user);
+                break;
+
+            case "DEALER":
+                dealerRepository.deleteByUser(user);
+                break;
+
+            case "CUSTOMER":
+                customerRepository.deleteByUser(user);
+                break;
+
+            default:
+                throw new RuntimeException("Unsupported role: " + roleName);
+        }
+
+        userRepository.delete(user);
+    }
+
+
+    
     public String sendOtp(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
@@ -153,7 +190,7 @@ public class UserService {
         String otp = String.format("%04d", new Random().nextInt(10000)); // 4 digit OTP
 
         user.setOtp(otp);
-        user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
+        user.setOtpExpiry(LocalDateTime.now().plusMinutes(10)); // OTP valid for 10 minutes
         userRepository.save(user);
 
         emailService.sendEmail(user.getEmail(), "Your OTP Code", "Your OTP is: " + otp);
@@ -161,20 +198,21 @@ public class UserService {
         return "OTP Sent Successfully!";
     }
 
-    // ✅ Verify OTP
     public String verifyOtp(String email, String otp) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-        if (user.getOtp() == null || user.getOtpExpiry() == null || user.getOtpExpiry().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("OTP expired. Request a new one.");
+        // 🔥 First: Check expiry properly
+        if (user.getOtpExpiry() == null || user.getOtpExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP has expired.");
         }
 
-        if (!user.getOtp().equals(otp)) {
+        // 🔥 Second: Check OTP mismatch
+        if (user.getOtp() == null || !user.getOtp().equals(otp)) {
             throw new RuntimeException("Invalid OTP!");
         }
 
-        // ✅ OTP Verified → Activate account
+        // 🔥 OTP successful
         user.setStatus("ACTIVE");
         user.setOtp(null);
         user.setOtpExpiry(null);
@@ -182,6 +220,7 @@ public class UserService {
 
         return "OTP Verified Successfully!";
     }
+
 
 
     

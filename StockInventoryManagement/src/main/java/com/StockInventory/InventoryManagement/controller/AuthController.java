@@ -48,8 +48,20 @@ public class AuthController {
         );
     }
     
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<BaseResponseDTO<Void>> deleteUser(@PathVariable String id) {
 
+        userService.deleteUser(id);
 
+        return ResponseEntity.ok(
+                new BaseResponseDTO<>(
+                        200,
+                        "User deleted successfully",
+                        null,
+                        LocalDateTime.now()
+                )
+        );
+    }
     @PostMapping("/send-otp")
     @PermitAll
     public ResponseEntity<String> sendOtp(@RequestParam String email) {

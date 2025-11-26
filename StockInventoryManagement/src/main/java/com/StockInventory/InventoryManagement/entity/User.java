@@ -47,8 +47,9 @@ public class User {
 
     @Column(name = "otp_Expiry")
     private LocalDateTime otpExpiry;
+    
+    @Column(nullable = false)
+    private Boolean isVerified = false;
 
-    @Column(name = "is_verified")
-    private boolean isVerified = false;
 
 }
